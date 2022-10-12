@@ -1,90 +1,48 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-
-    <meta name="keywords" content="天地图" />
-
-    <title>天地图－地图API－范例－地图拾取器</title>
-
-    <script type="text/javascript" src="http://api.tianditu.gov.cn/api?v=3.0&tk=6bf911bc7f3938007bdb52450d5e4d15"></script>
-
-    <script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="keywords" content="天地图"/>
+	<script src="https://unpkg.com/three@0.126.0/build/three.js"></script>
+    <title>天地图融合ARCore示例应用</title>
+    <script type="text/javascript" src="http://api.tianditu.gov.cn/api?v=4.0&tk=6bf911bc7f3938007bdb52450d5e4d15"></script>
+    <style type="text/css">body,html{width:100%;height:100%;margin:0;font-family:"Microsoft YaHei"}#cameraDiv{width:100%;height:40%}#mapDiv{width:100%;height:40%}input,b,p{margin-left:5px;font-size:20px}</style>
+    <script src="https://unpkg.com/three@0.123.0/build/three.js"></script>
+        <script src="https://unpkg.com/three@0.123.0/examples/js/loaders/GLTFLoader.js"></script>
+    
+        <script src="../shared/utils.js"></script>
+        <script src="app.js"></script>
+	<script>
         var map;
-
-        var zoom = 10;
-
-        var pickup;
-
-        function onLoad()
-
-        {
-            //初始化地图对象
-            map = new TMap("mapDiv");
-            //设置显示地图的中心点和级别
-            map.centerAndZoom(new TLngLat(116.40969, 39.89945), zoom);
-            map.enableHandleMouseScroll();
-            //启用连续缩放效果
-            map.enableContinuousZoom();
-            var config = {
-
-                callback: getLngLat
-
-            };
-
-            pickup = new TCoordinatePickup(map, config);
-
-            pickup.addEvent();
-
-
-
+        var zoom = 12;
+        function onLoad() {
+            map = new T.Map('mapDiv');
+            map.centerAndZoom(new T.LngLat(116.40769, 39.89945), zoom);
+            var cp = new T.CoordinatePickup(map, {callback: getLngLat})
+            cp.addEvent();
         }
 
-        function getLngLat(lnglat) //这个地方给的是onclick函数的回调事件
-
-        {
-
-            document.getElementById("lnglatStr").value = lnglat.getLng() + "," + lnglat.getLat();
-
-
-
-            var config = {
-
-                text: lnglat.getLng() + "," + lnglat.getLat(),
-
-                offset: new TPixel(5, 5),
-
-                position: new TLngLat(lnglat.getLng(), lnglat.getLat())
-
-            };
-
-
-            //点击地图之后，将在点击位置放置一个标注
-            //创建标注对象
-            var marker = new TMarker(new TLngLat(lnglat.getLng(), lnglat.getLat()));
-            map.addOverLay(marker);
-            var label = new TLabel(config);
-            //向地图上添加标注
-            map.addOverLay(label);
+        function getLngLat(lnglat) {
+            document.getElementById("lnglatStr").value = lnglat.lng.toFixed(6) + "," + lnglat.lat.toFixed(6);
+		    //创建标注对象
+		    //if (marker!=null)
+			//   map.removeOverLay(marker);
+			map.clearOverLays();
+			var marker = new T.Marker(new T.LngLat(lnglat.lng.toFixed(6), lnglat.lat.toFixed(6)));
+			//向地图上添加标注
+			map.addOverLay(marker);
         }
     </script>
-
 </head>
-
 <body onLoad="onLoad()">
+<div id='cameraDiv'>
 
-    <div id="mapDiv" style="height: 600px;width: 1536px"></div>
-
-    <div>
-
-        用鼠标在地图上点选获得地理坐标
-
-        <input type="text" id="lnglatStr" value="" />
-
-    </div>
-
+</div>
+<div id="mapDiv" ></div>
+<p>地图点位获取API</p>
+<div >
+	用鼠标在地图上点选获得地理坐标
+    <input type="text" id="lnglatStr" value=""/>
+</div>
 </body>
-
 </html>
